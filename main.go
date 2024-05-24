@@ -24,12 +24,12 @@ func NewBot(chatID int64) *Bot {
 }
 
 func (b *Bot) Update(update *echotron.Update) {
-	log.Println("Received update:", update)
+	log.Println("CHat yangilandi:", update)
 	if update.Message != nil {
 		message := update.Message
 		b.chatID = message.Chat.ID
 		if message.Text != "" {
-			log.Println("Received message:", message.Text)
+			log.Println("Xabar qabul qilindi:", message.Text)
 			b.handleMessage(message.Text)
 		}
 	}
@@ -38,12 +38,12 @@ func (b *Bot) Update(update *echotron.Update) {
 func (b *Bot) handleMessage(text string) {
 	if text == "/start" {
 		b.sendMessage("Assaloomu alaykum, Videoni 720p formatda yuklab olish uchun menga YouTube havolasini yuboring.")
-	} else if strings.HasPrefix(text, "/download ") {
-		url := strings.TrimPrefix(text, "/download ")
-		log.Println("Processing download command for URL:", url)
-		b.downloadAndSendVideo(url)
+	// } else if strings.HasPrefix(text, "/download ") {
+	// 	url := strings.TrimPrefix(text, "/download ")
+	// 	log.Println("Ushbu URL bo'yicha qayta ishlash boshlandi:", url)
+	// 	b.downloadAndSendVideo(url)
 	} else if isValidURL(text) {
-		log.Println("Processing URL:", text)
+		log.Println("Ushbu URL bo'yicha video yuklash boshlandi:", text)
 		b.downloadAndSendVideo(text)
 	} else {
 		log.Println("Notog'ri buyruq qabul qilindi")
@@ -71,7 +71,7 @@ func (b *Bot) downloadVideo(url string) (string, error) {
 	client := youtube.Client{}
 	video, err := client.GetVideo(url)
 	if err != nil {
-		return "", fmt.Errorf("error getting video info: %s", err)
+		return "", fmt.Errorf("video ma'lumotlarini olishda xatolik: %s", err)
 	}
 	formats := video.Formats.WithAudioChannels()
 	stream, _, err := client.GetStream(video, &formats[0])
@@ -81,12 +81,12 @@ func (b *Bot) downloadVideo(url string) (string, error) {
 	filePath := fmt.Sprintf("%s.mp4", video.Title)
 	file, err := os.Create(filePath)
 	if err != nil {
-		return "", fmt.Errorf("error creating file: %s", err)
+		return "", fmt.Errorf("fayl yaratishda xatolik: %s", err)
 	}
 	defer file.Close()
 	_, err = file.ReadFrom(stream)
 	if err != nil {
-		return "", fmt.Errorf("error saving video: %s", err)
+		return "", fmt.Errorf("videoni o'qish va saqlashda xatolik: %s", err)
 	}
 	return filePath, nil
 }
@@ -94,7 +94,7 @@ func (b *Bot) downloadVideo(url string) (string, error) {
 func (b *Bot) sendMessage(text string) {
 	_, err := b.SendMessage(text, b.chatID, nil)
 	if err != nil {
-		log.Println("Failed to send message:", err)
+		log.Println("Xabar jo'natishda xatolik:", err)
 	}
 }
 
@@ -102,12 +102,12 @@ func (b *Bot) sendVideo(videoPath string) {
 	videoFile := echotron.NewInputFilePath(videoPath)
 	_, err := b.SendVideo(videoFile, b.chatID, nil)
 	if err != nil {
-		log.Println("Failed to send video:", err)
+		log.Println("Video jo'natishda xatolik:", err)
 	}
 }
 
 func main() {
-	log.Println("Starting bot...")
+	log.Println("Bot ishga tushdi ...")
 	dsp := echotron.NewDispatcher(token, func(chatID int64) echotron.Bot {
 		return NewBot(chatID)
 	})
