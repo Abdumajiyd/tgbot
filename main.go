@@ -63,7 +63,7 @@ func (b *Bot) downloadAndSendVideo(url string) {
 		b.sendMessage("Video yuklab olinmadi: " + err.Error())
 		return
 	}
-	b.sendMessage("Video muvaqffaqiyatli yuklab olindi: " + videoPath)
+	b.sendMessage("Video muvaqffaqiyatli yuklab olindi, sizga jo'natilyapti")
 	b.sendVideo(videoPath)
 }
 
